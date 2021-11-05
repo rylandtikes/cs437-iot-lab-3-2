@@ -1,0 +1,796 @@
+
+[ec2-user@ip-10-0-1-150 .ssh]$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9001 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 02:7a:64:30:e4:ab brd ff:ff:ff:ff:ff:ff
+    inet 10.0.1.150/24 brd 10.0.1.255 scope global dynamic eth0
+       valid_lft 3285sec preferred_lft 3285sec
+    inet6 fe80::7a:64ff:fe30:e4ab/64 scope link 
+       valid_lft forever preferred_lft forever
+[ec2-user@ip-10-0-1-150 .ssh]$ ll
+total 16
+-rw------- 1 ec2-user ec2-user  391 Nov  5 03:27 authorized_keys
+-rw------- 1 ec2-user ec2-user 1675 Nov  5 04:23 id_rsa
+-rw-r--r-- 1 ec2-user ec2-user  417 Nov  5 04:23 id_rsa.pub
+-rw-r--r-- 1 ec2-user ec2-user  172 Nov  5 04:26 known_hosts
+[ec2-user@ip-10-0-1-150 .ssh]$ ssh -i "id_rsa" ec2-user@10.0.2.222
+Last login: Fri Nov  5 04:26:16 2021 from 10.0.1.150
+
+       __|  __|_  )
+       _|  (     /   Amazon Linux 2 AMI
+      ___|\___|___|
+
+https://aws.amazon.com/amazon-linux-2/
+[ec2-user@ip-10-0-2-222 ~]$ ll
+total 0
+[ec2-user@ip-10-0-2-222 ~]$ ls -la
+total 20
+drwx------ 3 ec2-user ec2-user 111 Nov  5 04:28 .
+drwxr-xr-x 3 root     root      22 Nov  5 02:45 ..
+-rw------- 1 ec2-user ec2-user  53 Nov  5 04:28 .bash_history
+-rw-r--r-- 1 ec2-user ec2-user  18 Jul 15  2020 .bash_logout
+-rw-r--r-- 1 ec2-user ec2-user 193 Jul 15  2020 .bash_profile
+-rw-r--r-- 1 ec2-user ec2-user 231 Jul 15  2020 .bashrc
+drwx------ 2 ec2-user ec2-user  29 Nov  5 04:27 .ssh
+-rw------- 1 ec2-user ec2-user 805 Nov  5 04:27 .viminfo
+[ec2-user@ip-10-0-2-222 ~]$ sudo tee /etc/yum.repos.d/pgdg.repo<<EOF
+> [pgdg13]
+> name=PostgreSQL 13 for RHEL/CentOS 7 - x86_64
+> baseurl=https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-7-x86_64
+> enabled=1
+> gpgcheck=0
+> EOF
+[pgdg13]
+name=PostgreSQL 13 for RHEL/CentOS 7 - x86_64
+baseurl=https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-7-x86_64
+enabled=1
+gpgcheck=0
+[ec2-user@ip-10-0-2-222 ~]$ sudo yum update
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+Could not retrieve mirrorlist https://amazonlinux-2-repos-us-east-1.s3.us-east-1.amazonaws.com/2/core/latest/x86_64/mirror.list error was
+12: Timeout on https://amazonlinux-2-repos-us-east-1.s3.us-east-1.amazonaws.com/2/core/latest/x86_64/mirror.list: (28, 'Connection timed out after 5001 milliseconds')
+
+
+ One of the configured repositories failed (Unknown),
+ and yum doesn't have enough cached data to continue. At this point the only
+ safe thing yum can do is fail. There are a few ways to work "fix" this:
+
+     1. Contact the upstream for the repository and get them to fix the problem.
+
+     2. Reconfigure the baseurl/etc. for the repository, to point to a working
+        upstream. This is most often useful if you are using a newer
+        distribution release than is supported by the repository (and the
+        packages for the previous distribution release still work).
+
+     3. Run the command with the repository temporarily disabled
+            yum --disablerepo=<repoid> ...
+
+     4. Disable the repository permanently, so yum won't use it by default. Yum
+        will then just ignore the repository until you permanently enable it
+        again or use --enablerepo for temporary usage:
+
+            yum-config-manager --disable <repoid>
+        or
+            subscription-manager repos --disable=<repoid>
+
+     5. Configure the failing repository to be skipped, if it is unavailable.
+        Note that yum will try to contact the repo. when it runs most commands,
+        so will have to try and fail each time (and thus. yum will be be much
+        slower). If it is a very temporary problem though, this is often a nice
+        compromise:
+
+            yum-config-manager --save --setopt=<repoid>.skip_if_unavailable=true
+
+Cannot find a valid baseurl for repo: amzn2-core/2/x86_64
+[ec2-user@ip-10-0-2-222 ~]$ yum-config-manager --save --setopt=<repoid>.skip_if_unavailable=true
+-bash: repoid: No such file or directory
+[ec2-user@ip-10-0-2-222 ~]$ yum-config-manager --save --setopt=amzn2-core/2/x86_64.skip_if_unavailable=true
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+You must be root to change the yum configuration.
+[ec2-user@ip-10-0-2-222 ~]$ sufo yum-config-manager --save --setopt=amzn2-core/2/x86_64.skip_if_unavailable=true
+-bash: sufo: command not found
+[ec2-user@ip-10-0-2-222 ~]$ sudo yum-config-manager --save --setopt=amzn2-core/2/x86_64.skip_if_unavailable=true
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+============================================================ main ============================================================
+[main]
+alwaysprompt = True
+assumeno = False
+assumeyes = False
+autocheck_running_kernel = True
+autosavets = True
+bandwidth = 0
+bugtracker_url = https://bugzilla.redhat.com/enter_bug.cgi?product=Fedora&version=rawhide&component=yum
+cache = 0
+cachedir = /var/cache/yum/x86_64/2
+check_config_file_age = True
+clean_requirements_on_remove = False
+color = auto
+color_list_available_downgrade = dim,cyan
+color_list_available_install = normal
+color_list_available_reinstall = bold,underline,green
+color_list_available_running_kernel = bold,underline
+color_list_available_upgrade = bold,blue
+color_list_installed_extra = bold,red
+color_list_installed_newer = bold,yellow
+color_list_installed_older = bold
+color_list_installed_reinstall = normal
+color_list_installed_running_kernel = bold,underline
+color_search_match = bold
+color_update_installed = normal
+color_update_local = bold
+color_update_remote = normal
+commands = 
+debuglevel = 2
+deltarpm = 2
+deltarpm_metadata_percentage = 100
+deltarpm_percentage = 75
+depsolve_loop_limit = 100
+disable_includes = 
+diskspacecheck = True
+distroverpkg = system-release
+downloaddir = 
+downloadonly = 
+enable_group_conditionals = True
+enabled = True
+enablegroups = True
+errorlevel = 2
+exactarch = True
+exactarchlist = 
+exclude = 
+exit_on_lock = False
+failovermethod = priority
+fssnap_abort_on_errors = any
+fssnap_automatic_keep = 1
+fssnap_automatic_post = False
+fssnap_automatic_pre = False
+fssnap_devices = !*/swap,
+   !*/lv_swap
+fssnap_percentage = 100
+ftp_disable_epsv = False
+gaftonmode = False
+gpgcheck = True
+group_command = objects
+group_package_types = mandatory,
+   default
+groupremove_leaf_only = False
+history_list_view = single-user-commands
+history_record = True
+history_record_packages = yum,
+   rpm
+http_caching = all
+installonly_limit = 3
+installonlypkgs = kernel,
+   kernel-bigmem,
+   installonlypkg(kernel),
+   installonlypkg(kernel-module),
+   installonlypkg(vm),
+   kernel-enterprise,
+   kernel-smp,
+   kernel-debug,
+   kernel-unsupported,
+   kernel-source,
+   kernel-devel,
+   kernel-PAE,
+   kernel-PAE-debug
+installroot = /
+ip_resolve = 
+keepalive = True
+keepcache = False
+kernelpkgnames = kernel,
+   kernel-smp,
+   kernel-enterprise,
+   kernel-bigmem,
+   kernel-BOOT,
+   kernel-PAE,
+   kernel-PAE-debug
+loadts_ignoremissing = False
+loadts_ignorenewrpm = False
+loadts_ignorerpm = False
+localpkg_gpgcheck = False
+logfile = /var/log/yum.log
+max_connections = 0
+mddownloadpolicy = sqlite
+mdpolicy = group:small
+metadata_expire = 21600
+metadata_expire_filter = read-only:present
+minrate = 0
+mirrorlist_expire = 86400
+multilib_policy = best
+obsoletes = True
+override_install_langs = 
+overwrite_groups = False
+password = 
+payload_gpgcheck = False
+persistdir = /var/lib/yum
+pluginconfpath = /etc/yum/pluginconf.d
+pluginpath = /usr/share/yum-plugins,
+   /usr/lib/yum-plugins
+plugins = True
+progess_obj = 
+protected_multilib = True
+protected_packages = yum,
+   systemd
+proxy = False
+proxy_password = 
+proxy_username = 
+query_install_excludes = False
+recent = 7
+recheck_installed_requires = True
+remove_leaf_only = False
+repo_gpgcheck = False
+repopkgsremove_leaf_only = False
+reposdir = /etc/yum/repos.d,
+   /etc/yum.repos.d
+reset_nice = True
+retries = 7
+rpm_check_debug = True
+rpmverbosity = info
+shell_exit_status = 0
+showdupesfromrepos = False
+skip_broken = False
+skip_missing_names_on_install = True
+skip_missing_names_on_update = True
+ssl_check_cert_permissions = True
+sslcacert = 
+sslclientcert = 
+sslclientkey = 
+sslverify = True
+syslog_device = /dev/log
+syslog_facility = LOG_USER
+syslog_ident = 
+throttle = 0
+timeout = 5.0
+tolerant = True
+tsflags = 
+ui_repoid_vars = releasever,
+   basearch
+upgrade_group_objects_upgrade = True
+upgrade_requirements_on_install = False
+usercache = True
+username = 
+usr_w_check = True
+
+====================================================== repo: amzn2-core ======================================================
+[amzn2-core]
+async = True
+bandwidth = 0
+base_persistdir = /var/lib/yum/repos/x86_64/2
+baseurl = 
+cache = 0
+cachedir = /var/cache/yum/x86_64/2/amzn2-core
+check_config_file_age = True
+compare_providers_priority = 80
+cost = 1000
+deltarpm_metadata_percentage = 100
+deltarpm_percentage = 
+enabled = True
+enablegroups = True
+exclude = 
+failovermethod = priority
+ftp_disable_epsv = False
+gpgcadir = /var/lib/yum/repos/x86_64/2/amzn2-core/gpgcadir
+gpgcakey = 
+gpgcheck = True
+gpgdir = /var/lib/yum/repos/x86_64/2/amzn2-core/gpgdir
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-amazon-linux-2
+hdrdir = /var/cache/yum/x86_64/2/amzn2-core/headers
+http_caching = all
+includepkgs = 
+ip_resolve = 
+keepalive = True
+keepcache = False
+mddownloadpolicy = sqlite
+mdpolicy = group:small
+mediaid = 
+metadata_expire = 300
+metadata_expire_filter = read-only:present
+metalink = 
+minrate = 0
+mirrorlist = https://amazonlinux-2-repos-us-east-1.s3.us-east-1.amazonaws.com/2/core/latest/x86_64/mirror.list
+mirrorlist_expire = 300
+name = Amazon Linux 2 core repository
+old_base_cache_dir = 
+password = 
+persistdir = /var/lib/yum/repos/x86_64/2/amzn2-core
+pkgdir = /var/cache/yum/x86_64/2/amzn2-core/packages
+priority = 10
+proxy = False
+proxy_dict = 
+proxy_password = 
+proxy_username = 
+repo_gpgcheck = False
+report_instanceid = True
+retries = 7
+skip_if_unavailable = False
+ssl_check_cert_permissions = True
+sslcacert = 
+sslclientcert = 
+sslclientkey = 
+sslverify = True
+throttle = 0
+timeout = 5.0
+ui_id = amzn2-core/2/x86_64
+ui_repoid_vars = releasever,
+   basearch
+username = 
+
+================================================== repo: amzn2extra-docker ===================================================
+[amzn2extra-docker]
+async = True
+bandwidth = 0
+base_persistdir = /var/lib/yum/repos/x86_64/2
+baseurl = 
+cache = 0
+cachedir = /var/cache/yum/x86_64/2/amzn2extra-docker
+check_config_file_age = True
+compare_providers_priority = 80
+cost = 1000
+deltarpm_metadata_percentage = 100
+deltarpm_percentage = 
+enabled = True
+enablegroups = True
+exclude = 
+failovermethod = priority
+ftp_disable_epsv = False
+gpgcadir = /var/lib/yum/repos/x86_64/2/amzn2extra-docker/gpgcadir
+gpgcakey = 
+gpgcheck = True
+gpgdir = /var/lib/yum/repos/x86_64/2/amzn2extra-docker/gpgdir
+gpgkey = file:///etc/pki/rpm-gpg/RPM-GPG-KEY-amazon-linux-2
+hdrdir = /var/cache/yum/x86_64/2/amzn2extra-docker/headers
+http_caching = all
+includepkgs = 
+ip_resolve = 
+keepalive = True
+keepcache = False
+mddownloadpolicy = sqlite
+mdpolicy = group:small
+mediaid = 
+metadata_expire = 21600
+metadata_expire_filter = read-only:present
+metalink = 
+minrate = 0
+mirrorlist = https://amazonlinux-2-repos-us-east-1.s3.us-east-1.amazonaws.com/2/extras/docker/latest/x86_64/mirror.list
+mirrorlist_expire = 86400
+name = Amazon Extras repo for docker
+old_base_cache_dir = 
+password = 
+persistdir = /var/lib/yum/repos/x86_64/2/amzn2extra-docker
+pkgdir = /var/cache/yum/x86_64/2/amzn2extra-docker/packages
+priority = 10
+proxy = False
+proxy_dict = 
+proxy_password = 
+proxy_username = 
+repo_gpgcheck = False
+report_instanceid = True
+retries = 7
+skip_if_unavailable = True
+ssl_check_cert_permissions = True
+sslcacert = 
+sslclientcert = 
+sslclientkey = 
+sslverify = True
+throttle = 0
+timeout = 5.0
+ui_id = amzn2extra-docker/2/x86_64
+ui_repoid_vars = releasever,
+   basearch
+username = 
+
+======================================================== repo: pgdg13 ========================================================
+[pgdg13]
+async = True
+bandwidth = 0
+base_persistdir = /var/lib/yum/repos/x86_64/2
+baseurl = https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-7-x86_64
+cache = 0
+cachedir = /var/cache/yum/x86_64/2/pgdg13
+check_config_file_age = True
+compare_providers_priority = 80
+cost = 1000
+deltarpm_metadata_percentage = 100
+deltarpm_percentage = 
+enabled = True
+enablegroups = True
+exclude = 
+failovermethod = priority
+ftp_disable_epsv = False
+gpgcadir = /var/lib/yum/repos/x86_64/2/pgdg13/gpgcadir
+gpgcakey = 
+gpgcheck = False
+gpgdir = /var/lib/yum/repos/x86_64/2/pgdg13/gpgdir
+gpgkey = 
+hdrdir = /var/cache/yum/x86_64/2/pgdg13/headers
+http_caching = all
+includepkgs = 
+ip_resolve = 
+keepalive = True
+keepcache = False
+mddownloadpolicy = sqlite
+mdpolicy = group:small
+mediaid = 
+metadata_expire = 21600
+metadata_expire_filter = read-only:present
+metalink = 
+minrate = 0
+mirrorlist = 
+mirrorlist_expire = 86400
+name = PostgreSQL 13 for RHEL/CentOS 7 - x86_64
+old_base_cache_dir = 
+password = 
+persistdir = /var/lib/yum/repos/x86_64/2/pgdg13
+pkgdir = /var/cache/yum/x86_64/2/pgdg13/packages
+priority = 99
+proxy = False
+proxy_dict = 
+proxy_password = 
+proxy_username = 
+repo_gpgcheck = False
+report_instanceid = False
+retries = 7
+skip_if_unavailable = False
+ssl_check_cert_permissions = True
+sslcacert = 
+sslclientcert = 
+sslclientkey = 
+sslverify = True
+throttle = 0
+timeout = 5.0
+ui_id = pgdg13
+ui_repoid_vars = releasever,
+   basearch
+username = 
+
+[ec2-user@ip-10-0-2-222 ~]$ sudo yum update
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+Could not retrieve mirrorlist https://amazonlinux-2-repos-us-east-1.s3.us-east-1.amazonaws.com/2/core/latest/x86_64/mirror.list error was
+12: Timeout on https://amazonlinux-2-repos-us-east-1.s3.us-east-1.amazonaws.com/2/core/latest/x86_64/mirror.list: (28, 'Connection timed out after 5000 milliseconds')
+
+
+ One of the configured repositories failed (Unknown),
+ and yum doesn't have enough cached data to continue. At this point the only
+ safe thing yum can do is fail. There are a few ways to work "fix" this:
+
+     1. Contact the upstream for the repository and get them to fix the problem.
+
+     2. Reconfigure the baseurl/etc. for the repository, to point to a working
+        upstream. This is most often useful if you are using a newer
+        distribution release than is supported by the repository (and the
+        packages for the previous distribution release still work).
+
+     3. Run the command with the repository temporarily disabled
+            yum --disablerepo=<repoid> ...
+
+     4. Disable the repository permanently, so yum won't use it by default. Yum
+        will then just ignore the repository until you permanently enable it
+        again or use --enablerepo for temporary usage:
+
+            yum-config-manager --disable <repoid>
+        or
+            subscription-manager repos --disable=<repoid>
+
+     5. Configure the failing repository to be skipped, if it is unavailable.
+        Note that yum will try to contact the repo. when it runs most commands,
+        so will have to try and fail each time (and thus. yum will be be much
+        slower). If it is a very temporary problem though, this is often a nice
+        compromise:
+
+            yum-config-manager --save --setopt=<repoid>.skip_if_unavailable=true
+
+Cannot find a valid baseurl for repo: amzn2-core/2/x86_64
+[ec2-user@ip-10-0-2-222 ~]$ sudo yum clean all
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+Cleaning repos: amzn2-core amzn2extra-docker pgdg13
+Cleaning up everything
+Maybe you want: rm -rf /var/cache/yum, to also free up space taken by orphaned data from disabled or removed repos
+[ec2-user@ip-10-0-2-222 ~]$ sudo yum update
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+Could not retrieve mirrorlist https://amazonlinux-2-repos-us-east-1.s3.us-east-1.amazonaws.com/2/core/latest/x86_64/mirror.list error was
+12: Timeout on https://amazonlinux-2-repos-us-east-1.s3.us-east-1.amazonaws.com/2/core/latest/x86_64/mirror.list: (28, 'Connection timed out after 5001 milliseconds')
+
+
+ One of the configured repositories failed (Unknown),
+ and yum doesn't have enough cached data to continue. At this point the only
+ safe thing yum can do is fail. There are a few ways to work "fix" this:
+
+     1. Contact the upstream for the repository and get them to fix the problem.
+
+     2. Reconfigure the baseurl/etc. for the repository, to point to a working
+        upstream. This is most often useful if you are using a newer
+        distribution release than is supported by the repository (and the
+        packages for the previous distribution release still work).
+
+     3. Run the command with the repository temporarily disabled
+            yum --disablerepo=<repoid> ...
+
+     4. Disable the repository permanently, so yum won't use it by default. Yum
+        will then just ignore the repository until you permanently enable it
+        again or use --enablerepo for temporary usage:
+
+            yum-config-manager --disable <repoid>
+        or
+            subscription-manager repos --disable=<repoid>
+
+     5. Configure the failing repository to be skipped, if it is unavailable.
+        Note that yum will try to contact the repo. when it runs most commands,
+        so will have to try and fail each time (and thus. yum will be be much
+        slower). If it is a very temporary problem though, this is often a nice
+        compromise:
+
+            yum-config-manager --save --setopt=<repoid>.skip_if_unavailable=true
+
+Cannot find a valid baseurl for repo: amzn2-core/2/x86_64
+[ec2-user@ip-10-0-2-222 ~]$ sudo yum update
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+Could not retrieve mirrorlist https://amazonlinux-2-repos-us-east-1.s3.us-east-1.amazonaws.com/2/core/latest/x86_64/mirror.list error was
+12: Timeout on https://amazonlinux-2-repos-us-east-1.s3.us-east-1.amazonaws.com/2/core/latest/x86_64/mirror.list: (28, 'Connection timed out after 5001 milliseconds')
+
+
+ One of the configured repositories failed (Unknown),
+ and yum doesn't have enough cached data to continue. At this point the only
+ safe thing yum can do is fail. There are a few ways to work "fix" this:
+
+     1. Contact the upstream for the repository and get them to fix the problem.
+
+     2. Reconfigure the baseurl/etc. for the repository, to point to a working
+        upstream. This is most often useful if you are using a newer
+        distribution release than is supported by the repository (and the
+        packages for the previous distribution release still work).
+
+     3. Run the command with the repository temporarily disabled
+            yum --disablerepo=<repoid> ...
+
+     4. Disable the repository permanently, so yum won't use it by default. Yum
+        will then just ignore the repository until you permanently enable it
+        again or use --enablerepo for temporary usage:
+
+            yum-config-manager --disable <repoid>
+        or
+            subscription-manager repos --disable=<repoid>
+
+     5. Configure the failing repository to be skipped, if it is unavailable.
+        Note that yum will try to contact the repo. when it runs most commands,
+        so will have to try and fail each time (and thus. yum will be be much
+        slower). If it is a very temporary problem though, this is often a nice
+        compromise:
+
+            yum-config-manager --save --setopt=<repoid>.skip_if_unavailable=true
+
+Cannot find a valid baseurl for repo: amzn2-core/2/x86_64
+[ec2-user@ip-10-0-2-222 ~]$ sudo yum update
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+^C^Z
+[1]+  Stopped                 sudo yum update
+[ec2-user@ip-10-0-2-222 ~]$ ping 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+^C
+--- 8.8.8.8 ping statistics ---
+134 packets transmitted, 0 received, 100% packet loss, time 136198ms
+
+[ec2-user@ip-10-0-2-222 ~]$ ping 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+^C
+--- 8.8.8.8 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2051ms
+
+[ec2-user@ip-10-0-2-222 ~]$ ping 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+c^[[A^Z
+[2]+  Stopped                 ping 8.8.8.8
+[ec2-user@ip-10-0-2-222 ~]$ ping 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+^C
+--- 8.8.8.8 ping statistics ---
+57 packets transmitted, 0 received, 100% packet loss, time 57341ms
+
+[ec2-user@ip-10-0-2-222 ~]$ ping 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+^C
+--- 8.8.8.8 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2046ms
+
+[ec2-user@ip-10-0-2-222 ~]$ ping 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+^C
+--- 8.8.8.8 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2054ms
+
+[ec2-user@ip-10-0-2-222 ~]$ ping 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+^C
+--- 8.8.8.8 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms
+
+[ec2-user@ip-10-0-2-222 ~]$ ping 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+^C
+--- 8.8.8.8 ping statistics ---
+53 packets transmitted, 0 received, 100% packet loss, time 53235ms
+
+[ec2-user@ip-10-0-2-222 ~]$ ping 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+^C
+--- 8.8.8.8 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2054ms
+
+[ec2-user@ip-10-0-2-222 ~]$ ping 8.8.8.8
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=119 ttl=109 time=1.85 ms
+64 bytes from 8.8.8.8: icmp_seq=120 ttl=109 time=1.20 ms
+64 bytes from 8.8.8.8: icmp_seq=121 ttl=109 time=1.25 ms
+64 bytes from 8.8.8.8: icmp_seq=122 ttl=109 time=1.24 ms
+64 bytes from 8.8.8.8: icmp_seq=123 ttl=109 time=1.24 ms
+^C
+--- 8.8.8.8 ping statistics ---
+123 packets transmitted, 5 received, 95% packet loss, time 124814ms
+rtt min/avg/max/mdev = 1.201/1.359/1.854/0.249 ms
+
+
+
+
+[ec2-user@ip-10-0-2-222 ~]$ sudo tee /etc/yum.repos.d/pgdg.repo<<EOF
+> [pgdg13]
+> name=PostgreSQL 13 for RHEL/CentOS 7 - x86_64
+> baseurl=https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-7-x86_64
+> enabled=1
+> gpgcheck=0
+> EOF
+[pgdg13]
+name=PostgreSQL 13 for RHEL/CentOS 7 - x86_64
+baseurl=https://download.postgresql.org/pub/repos/yum/13/redhat/rhel-7-x86_64
+enabled=1
+gpgcheck=0
+[ec2-user@ip-10-0-2-222 ~]$ sudo yum update
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+Existing lock /var/run/yum.pid: another copy is running as pid 32526.
+Another app is currently holding the yum lock; waiting for it to exit...
+  The other application is: yum
+    Memory :  36 M RSS (434 MB VSZ)
+    Started: Fri Nov  5 04:48:17 2021 - 41:22 ago
+    State  : Traced/Stopped, pid: 32526
+Another app is currently holding the yum lock; waiting for it to exit...
+  The other application is: yum
+    Memory :  36 M RSS (434 MB VSZ)
+    Started: Fri Nov  5 04:48:17 2021 - 41:24 ago
+    State  : Traced/Stopped, pid: 32526
+Another app is currently holding the yum lock; waiting for it to exit...
+  The other application is: yum
+    Memory :  36 M RSS (434 MB VSZ)
+    Started: Fri Nov  5 04:48:17 2021 - 41:26 ago
+    State  : Traced/Stopped, pid: 32526
+Another app is currently holding the yum lock; waiting for it to exit...
+  The other application is: yum
+    Memory :  36 M RSS (434 MB VSZ)
+    Started: Fri Nov  5 04:48:17 2021 - 41:28 ago
+    State  : Traced/Stopped, pid: 32526
+^C
+
+Exiting on user cancel.
+[ec2-user@ip-10-0-2-222 ~]$ ps -ef | grep yum
+root     32525 32412  0 04:48 pts/0    00:00:00 sudo yum update
+root     32526 32525  0 04:48 pts/0    00:00:00 /usr/bin/python /bin/yum update
+ec2-user 32703 32412  0 05:29 pts/0    00:00:00 grep --color=auto yum
+[ec2-user@ip-10-0-2-222 ~]$ sudo kill -9 yum
+[ec2-user@ip-10-0-2-222 ~]$ ps -ef | grep yum
+root     32525 32412  0 04:48 pts/0    00:00:00 sudo yum update
+root     32526 32525  0 04:48 pts/0    00:00:00 [yum] <defunct>
+ec2-user 32714 32412  0 05:30 pts/0    00:00:00 grep --color=auto yum
+[ec2-user@ip-10-0-2-222 ~]$ sudo kill -9 32525
+[1]-  Killed                  sudo yum update
+[ec2-user@ip-10-0-2-222 ~]$ sudo kill -9 32526
+kill: sending signal to 32526 failed: No such process
+
+
+
+[ec2-user@ip-10-0-2-222 ~]$ sudo yum update
+......
+cut out some output to shorten this
+......
+
+Installed:
+  kernel.x86_64 0:4.14.252-195.483.amzn2                                                                                      
+
+Updated:
+  aws-cfn-bootstrap.noarch 0:2.0-9.amzn2                        dracut-config-ec2.noarch 0:2.0-2.amzn2                        
+  ec2-instance-connect.noarch 0:1.1-15.amzn2                    glibc.x86_64 0:2.26-56.amzn2                                  
+  glibc-all-langpacks.x86_64 0:2.26-56.amzn2                    glibc-common.x86_64 0:2.26-56.amzn2                           
+  glibc-locale-source.x86_64 0:2.26-56.amzn2                    glibc-minimal-langpack.x86_64 0:2.26-56.amzn2                 
+  kernel-tools.x86_64 0:4.14.252-195.483.amzn2                  kpatch-runtime.noarch 0:0.9.4-2.amzn2                         
+  libcrypt.x86_64 0:2.26-56.amzn2                               openssl.x86_64 1:1.0.2k-19.amzn2.0.10                         
+  openssl-libs.x86_64 1:1.0.2k-19.amzn2.0.10                    system-release.x86_64 1:2-14.amzn2                            
+
+Complete!
+[ec2-user@ip-10-0-2-222 ~]$ sudo yum install postgresql13 postgresql13-server
+Loaded plugins: extras_suggestions, langpacks, priorities, update-motd
+1 packages excluded due to repository priority protections
+Resolving Dependencies
+--> Running transaction check
+---> Package postgresql13.x86_64 0:13.4-1PGDG.rhel7 will be installed
+--> Processing Dependency: postgresql13-libs(x86-64) = 13.4-1PGDG.rhel7 for package: postgresql13-13.4-1PGDG.rhel7.x86_64
+--> Processing Dependency: libpq.so.5()(64bit) for package: postgresql13-13.4-1PGDG.rhel7.x86_64
+---> Package postgresql13-server.x86_64 0:13.4-1PGDG.rhel7 will be installed
+--> Running transaction check
+---> Package postgresql13-libs.x86_64 0:13.4-1PGDG.rhel7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+==============================================================================================================================
+ Package                              Arch                    Version                           Repository               Size
+==============================================================================================================================
+Installing:
+ postgresql13                         x86_64                  13.4-1PGDG.rhel7                  pgdg13                  1.4 M
+ postgresql13-server                  x86_64                  13.4-1PGDG.rhel7                  pgdg13                  5.4 M
+Installing for dependencies:
+ postgresql13-libs                    x86_64                  13.4-1PGDG.rhel7                  pgdg13                  381 k
+
+Transaction Summary
+==============================================================================================================================
+Install  2 Packages (+1 Dependent package)
+
+Total download size: 7.2 M
+Installed size: 31 M
+Is this ok [y/d/N]: y
+Downloading packages:
+(1/3): postgresql13-libs-13.4-1PGDG.rhel7.x86_64.rpm                                                   | 381 kB  00:00:01     
+(2/3): postgresql13-13.4-1PGDG.rhel7.x86_64.rpm                                                        | 1.4 MB  00:00:01     
+(3/3): postgresql13-server-13.4-1PGDG.rhel7.x86_64.rpm                                                 | 5.4 MB  00:00:01     
+------------------------------------------------------------------------------------------------------------------------------
+Total                                                                                         2.6 MB/s | 7.2 MB  00:00:02     
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : postgresql13-libs-13.4-1PGDG.rhel7.x86_64                                                                  1/3 
+  Installing : postgresql13-13.4-1PGDG.rhel7.x86_64                                                                       2/3 
+  Installing : postgresql13-server-13.4-1PGDG.rhel7.x86_64                                                                3/3 
+  Verifying  : postgresql13-libs-13.4-1PGDG.rhel7.x86_64                                                                  1/3 
+  Verifying  : postgresql13-13.4-1PGDG.rhel7.x86_64                                                                       2/3 
+  Verifying  : postgresql13-server-13.4-1PGDG.rhel7.x86_64                                                                3/3 
+
+Installed:
+  postgresql13.x86_64 0:13.4-1PGDG.rhel7                     postgresql13-server.x86_64 0:13.4-1PGDG.rhel7                    
+
+Dependency Installed:
+  postgresql13-libs.x86_64 0:13.4-1PGDG.rhel7                                                                                 
+
+Complete!
+[ec2-user@ip-10-0-2-222 ~]$ sudo /usr/pgsql-13/bin/postgresql-13-setup initdb
+Initializing database ... OK
+
+[ec2-user@ip-10-0-2-222 ~]$ sudo systemctl start postgresql-13
+[ec2-user@ip-10-0-2-222 ~]$ sudo systemctl enable postgresql-13
+Created symlink from /etc/systemd/system/multi-user.target.wants/postgresql-13.service to /usr/lib/systemd/system/postgresql-13.service.
+[ec2-user@ip-10-0-2-222 ~]$ sudo systemctl status postgresql-13
+● postgresql-13.service - PostgreSQL 13 database server
+   Loaded: loaded (/usr/lib/systemd/system/postgresql-13.service; enabled; vendor preset: disabled)
+   Active: active (running) since Fri 2021-11-05 05:33:34 UTC; 11s ago
+     Docs: https://www.postgresql.org/docs/13/static/
+ Main PID: 3683 (postmaster)
+   CGroup: /system.slice/postgresql-13.service
+           ├─3683 /usr/pgsql-13/bin/postmaster -D /var/lib/pgsql/13/data/
+           ├─3686 postgres: logger 
+           ├─3688 postgres: checkpointer 
+           ├─3689 postgres: background writer 
+           ├─3690 postgres: walwriter 
+           ├─3691 postgres: autovacuum launcher 
+           ├─3692 postgres: stats collector 
+           └─3693 postgres: logical replication launcher 
+
+Nov 05 05:33:34 ip-10-0-2-222.ec2.internal systemd[1]: Starting PostgreSQL 13 database server...
+Nov 05 05:33:34 ip-10-0-2-222.ec2.internal postmaster[3683]: 2021-11-05 05:33:34.072 UTC [3683] LOG:  redirecting log o...cess
+Nov 05 05:33:34 ip-10-0-2-222.ec2.internal postmaster[3683]: 2021-11-05 05:33:34.072 UTC [3683] HINT:  Future log outpu...og".
+Nov 05 05:33:34 ip-10-0-2-222.ec2.internal systemd[1]: Started PostgreSQL 13 database server.
+Hint: Some lines were ellipsized, use -l to show in full.
+[ec2-user@ip-10-0-2-222 ~]$ sudo passwd postgres
+Changing password for user postgres.
+New password: 
+Retype new password: 
+passwd: all authentication tokens updated successfully.
+
