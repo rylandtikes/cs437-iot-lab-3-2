@@ -1,0 +1,107 @@
+ubuntu@gns3vm:~$ telnet
+telnet> open 172.16.253.1 5001
+Trying 172.16.253.1...
+Connected to 172.16.253.1.
+Escape character is '^]'.
+Connected to Dynamips VM "ESW2" (ID 2, type c3600) - Console port
+Press ENTER to get the prompt.
+00:00:04.911: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to down
+*Mar  1 00:00:06.331: %LINK-5-CHANGED: Interface FastEthernet0/0, changed state to administratively down
+*Mar  1 00:00:06.355: %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down
+*Mar  1 00:00:06.411: %LINK-5-CHANGED: Interface Vlan1, changed state to administratively down
+*Mar  1 00:00:06.487: %LINK-3-UPDOWN: Interface FastEthernet1/15, changed state to up
+*Mar  1 00:00:06.495: %LINK-3-UPDOWN: Interface FastEthernet1/14, changed state to up
+*Mar  1 00:00:06.499: %LINK-3-UPDOWN: Interface FastEthernet1/13, changed state to up
+*Mar  1 00:00:06.507: %LINK-3-UPDOWN: Interface FastEthernet1/12, changed state to up
+*Mar  1 00:00:06.507: %LINK-3-UPDOWN: Interface FastEthernet1/11, changed state to up
+*Mar  1 00:00:06.507: %LINK-3-UPDOWN: Interface FastEthernet1/10, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet1/9, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet1/8, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet1/7, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet1/6, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet1/5, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet1/4, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet1/3, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet1/2, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet1/1, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet1/0, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet0/15, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet0/14, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet0/13, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet0/12, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet0/11, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet0/10, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet0/9, changed state to up
+*Mar  1 00:00:06.515: %LINK-3-UPDOWN: Interface FastEthernet0/8, changed state to up
+*Mar  1 00:00:06.519: %LINK-3-UPDOWN: Interface FastEthernet0/7, changed state to up
+*Mar  1 00:00:06.519: %LINK-3-UPDOWN: Interface FastEthernet0/6, changed state to up
+*Mar  1 00:00:06.519: %LINK-3-UPDOWN: Interface FastEthernet0/5, changed state to up
+*Mar  1 00:00:06.519: %LINK-3-UPDOWN: Interface FastEthernet0/4, changed state to up
+*Mar  1 00:00:06.519: %LINK-3-UPDOWN: Interface FastEthernet0/3, changed state to up
+*Mar  1 00:00:06.519: %LINK-3-UPDOWN: Interface FastEthernet0/2, changed state to up
+*Mar  1 00:00:07.411: %LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan1, changed state to down
+*Mar  1 00:00:07.487: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet1/15, changed state to down
+*Mar  1 00:00:07.495: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet1/14, changed state to down
+*Mar  1 00:00:07.499: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet1/13, changed state to down
+*Mar  1 00:00:07.507: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet1/12, changed state to down
+*Mar  1 00:00:07.507: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet1/11, changed state to down
+*Mar  1 00:00:07.507: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet1/10, changed state to down
+*Mar  1 00:00:07.515: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet1/9, changed state to down
+*Mar  1 00:00:07.515: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet1/8, changed state to down
+*Mar  1 00:00:07.515: %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet1/7, changed state to down
+
+***************************************************************
+This is a normal Router with a SW module inside (NM-16ESW)
+It has been preconfigured with hard coded speed and duplex
+
+To create vlans use the command "vlan database" from exec mode
+After creating all desired vlans use "exit" to apply the config
+
+To view existing vlans use the command "show vlan-switch brief"
+
+Warning: You are using an old IOS image for this router.
+Please update the IOS to enable the "macro" command!
+***************************************************************
+
+
+ESW2#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+ESW2(config)#hostname layer3-switch2
+layer3-switch2(config)#vlan
+% Incomplete command.
+
+layer3-switch2(config)#exit
+layer3-switch2#
+*Mar  1 00:24:57.703: %SYS-5-CONFIG_I: Configured from console by console
+layer3-switch2#vlan
+% Incomplete command.
+
+layer3-switch2#vlan database
+layer3-switch2(vlan)#exit
+APPLY completed.
+Exiting....
+layer3-switch2#show vlan-switch
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Fa0/0, Fa0/1, Fa0/2, Fa0/3
+                                                Fa0/4, Fa0/5, Fa0/6, Fa0/7
+                                                Fa0/8, Fa0/9, Fa0/10, Fa0/11
+                                                Fa0/12, Fa0/13, Fa0/14, Fa0/15
+                                                Fa1/0, Fa1/1, Fa1/2, Fa1/3
+                                                Fa1/4, Fa1/5, Fa1/6, Fa1/7
+                                                Fa1/8, Fa1/9, Fa1/10, Fa1/11
+                                                Fa1/12, Fa1/13, Fa1/14, Fa1/15
+1002 fddi-default                     active    
+1003 token-ring-default               active    
+1004 fddinet-default                  active    
+1005 trnet-default                    active    
+
+VLAN Type  SAID       MTU   Parent RingNo BridgeNo Stp  BrdgMode Trans1 Trans2
+---- ----- ---------- ----- ------ ------ -------- ---- -------- ------ ------
+1    enet  100001     1500  -      -      -        -    -        1002   1003
+1002 fddi  101002     1500  -      -      -        -    -        1      1003
+1003 tr    101003     1500  1005   0      -        -    srb      1      1002
+1004 fdnet 101004     1500  -      -      1        ibm  -        0      0   
+1005 trnet 101005     1500  -      -      1        ibm  -        0      0   
+layer3-switch2#
